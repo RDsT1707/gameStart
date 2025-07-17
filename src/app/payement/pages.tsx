@@ -14,7 +14,8 @@ export default function CartPage() {
   // panier typé Game[], id est number
   const cart = useSelector((state: RootState) => state.cart.panier) as Game[] | undefined;
 
-  const totalPrice = cart?.reduce((acc, game) => acc + game.price, 0) ?? 0;
+  // Total price avec fallback 0 si price undefined
+  const totalPrice = cart?.reduce((acc, game) => acc + (game.price ?? 0), 0) ?? 0;
 
   if (!cart || cart.length === 0) {
     return (
@@ -27,8 +28,7 @@ export default function CartPage() {
     );
   }
 
-  // ...
-  // Exemple de suppression dans le panier : id est number
+  // Suppression dans le panier : id est number
   const handleRemove = (id: number) => {
     dispatch(removeFromCart(id));
   };
@@ -50,7 +50,10 @@ export default function CartPage() {
             />
             <div className="flex-1">
               <p className="font-semibold">{game.title}</p>
-              <p className="text-[#FF8200] font-bold">{game.price.toFixed(2)} €</p>
+              <p className="text-[#FF8200] font-bold">
+                {/* Si price undefined, affiche 0.00 */}
+                {(game.price ?? 0).toFixed(2)} €
+              </p>
             </div>
             <button
               onClick={() => handleRemove(game.id)}
@@ -63,7 +66,19 @@ export default function CartPage() {
         ))}
       </ul>
 
-      {/* ...reste du composant */}
+      {/* Tu peux ajouter un bouton vider le panier, total etc ici */}
+
+      <div className="text-right space-y-2 mt-4">
+        <p>
+          Total : <span className="font-bold text-[#FF8200]">{totalPrice.toFixed(2)} €</span>
+        </p>
+        <button
+          onClick={() => dispatch(clearCart())}
+          className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+        >
+          Vider le panier
+        </button>
+      </div>
     </div>
   );
 }
