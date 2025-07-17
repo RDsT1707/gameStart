@@ -1,27 +1,17 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "src/store"; // Remplace selon ta config tsconfig paths
+import type { RootState } from "@/store/store";
 import { removeFromCart, clearCart } from "@/store/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-// Définition du type Game pour TS
-type Game = {
-  id: string;
-  title: string;
-  price: number;
-  thumbnail?: string;
-};
+import type { Game } from "src/app/types/games";  // Import unique, pas de redéclaration
 
 export default function CartPage() {
-  // On précise à TS que panier contient des Game[]
-  const cart = useSelector((state: RootState) => state.cart.panier) as Game[];
+  // Casting via unknown pour éviter les conflits TS si types identiques mais pas reconnus
+  const cart = useSelector((state: RootState) => state.cart.panier) as unknown as Game[];
   const dispatch = useDispatch();
   const router = useRouter();
-
-  // DEBUG : voir ce qu'il y a dans le panier
-  console.log("Panier :", cart);
 
   if (!cart || cart.length === 0) {
     return (
@@ -34,16 +24,9 @@ export default function CartPage() {
     );
   }
 
-  // Tri du panier par prix (pour trouver le jeu le moins cher)
   const sortedCart = [...cart].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-
-  // Somme des prix (avec sécurité si price absent)
   const totalPrice = cart.reduce((acc, game) => acc + (game.price ?? 0), 0);
-
-  // Remise si 5 jeux ou plus : le moins cher offert
   const discount = cart.length >= 5 ? sortedCart[0].price ?? 0 : 0;
-
-  // Prix final après remise
   const finalPrice = totalPrice - discount;
 
   const handleValidation = () => {
@@ -62,7 +45,7 @@ export default function CartPage() {
             className="flex items-center gap-4 p-4 rounded-lg shadow-md bg-[#292929] hover:shadow-lg transition"
           >
             <img
-              src={game.thumbnail || "/placeholder.png"}
+              src={game.thumbnail ?? "/placeholder.png"}
               alt={game.title}
               className="w-20 h-20 object-cover rounded"
             />
