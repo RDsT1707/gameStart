@@ -1,6 +1,6 @@
 export type Game = {
-  id: number;           // number, pas string
+  id: number;
   title: string;
-  price: number;
+  price?: number; // optionnel
   thumbnail?: string;
 };
