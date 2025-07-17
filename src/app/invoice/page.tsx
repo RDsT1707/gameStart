@@ -1,48 +1,109 @@
 "use client";
 
-import React from "react";
-import jsPDF from "jspdf";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "src/store"; // Typage TS
+import { removeFromCart, clearCart } from "@/store/slices/cartSlice";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function InvoicePage() {
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+// Type précis du jeu dans le panier
+interface Game {
+  id: string;
+  title: string;
+  price: number;
+  thumbnail?: string;
+}
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Facture GameStart", 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Date : ${new Date().toLocaleDateString()}`, 14, 32);
+export default function CartPage() {
+  // Précise que cart est un tableau de Game
+  const cart = useSelector((state: RootState) => state.cart.panier) as Game[] | undefined;
+  const dispatch = useDispatch();
+  const router = useRouter();
 
-    let y = 45;
-    cartItems.forEach((item) => {
-      doc.text(`${item.title} x${item.quantity}`, 14, y);
-      doc.text(`${(item.price * item.quantity).toFixed(2)} €`, 160, y, { align: "right" });
-      y += 10;
-    });
-
-    doc.text(`Total : ${totalPrice.toFixed(2)} €`, 14, y + 10);
-    doc.save("facture-gamestart.pdf");
-  };
-
-  if (cartItems.length === 0) {
-    return <p className="p-8 text-center">Aucune facture disponible, panier vide.</p>;
+  if (!cart || cart.length === 0) {
+    return (
+      <div className="p-8 text-center bg-[#1E1E1E] min-h-screen text-white flex flex-col items-center justify-center">
+        <p className="text-xl mb-4">Ton panier est vide 🛒</p>
+        <Link href="/" className="text-[#FF8200] underline font-semibold">
+          Retour à l’accueil
+        </Link>
+      </div>
+    );
   }
 
+  // Trie en sécurité (avec fallback 0 si price absent)
+  const sortedCart = [...cart].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+
+  // Calcul total sécurisé
+  const totalPrice = cart.reduce((acc, game) => acc + (game.price ?? 0), 0);
+
+  // Réduction 4+1 si au moins 5 items
+  const discount = cart.length >= 5 ? sortedCart[0].price ?? 0 : 0;
+
+  const finalPrice = totalPrice - discount;
+
+  // Bouton validation
+  const handleValidation = () => {
+    dispatch(clearCart());
+    router.push("/payement/succes");
+  };
+
   return (
-    <div className="container mx-auto p-6 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Facture</h1>
-      <button
-        onClick={generatePDF}
-        className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
-      >
-        Télécharger la facture (PDF)
-      </button>
+    <div className="p-8 max-w-4xl mx-auto space-y-6 bg-[#1E1E1E] min-h-screen text-white">
+      <h1 className="text-3xl font-bold mb-4 text-[#FF8200] text-right">Ton panier</h1>
+
+      <ul className="space-y-4">
+        {cart.map((game) => (
+          <li
+            key={game.id}
+            className="flex items-center gap-4 p-4 rounded-lg shadow-md bg-[#292929] hover:shadow-lg transition"
+          >
+            <img
+              src={game.thumbnail || "/placeholder.png"}
+              alt={game.title}
+              className="w-20 h-20 object-cover rounded"
+            />
+            <div className="flex-1">
+              <p className="font-semibold">{game.title}</p>
+              <p className="text-[#FF8200] font-bold">{game.price?.toFixed(2)} €</p>
+            </div>
+            <button
+              onClick={() => dispatch(removeFromCart(game.id))}
+              className="text-red-600 font-bold text-xl px-2 hover:text-red-800 transition"
+              aria-label={`Retirer ${game.title} du panier`}
+            >
+              ✕
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <div className="text-right space-y-2">
+        <p>
+          Sous-total : <span className="font-semibold">{totalPrice.toFixed(2)} €</span>
+        </p>
+        {discount > 0 && (
+          <p className="text-green-500 font-semibold">Remise 4+1 : -{discount.toFixed(2)} €</p>
+        )}
+        <p className="text-xl font-bold">
+          Total : <span className="text-[#FF8200]">{finalPrice.toFixed(2)} €</span>
+        </p>
+
+        <div className="flex justify-end gap-4 mt-4">
+          <button
+            onClick={() => dispatch(clearCart())}
+            className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Vider le panier
+          </button>
+          <button
+            onClick={handleValidation}
+            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Valider la commande
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,15 +1,27 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store";
+import { RootState } from "src/store"; // Remplace selon ta config tsconfig paths
 import { removeFromCart, clearCart } from "@/store/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+// Définition du type Game pour TS
+type Game = {
+  id: string;
+  title: string;
+  price: number;
+  thumbnail?: string;
+};
+
 export default function CartPage() {
-  const cart = useSelector((state: RootState) => state.cart.panier);
+  // On précise à TS que panier contient des Game[]
+  const cart = useSelector((state: RootState) => state.cart.panier) as Game[];
   const dispatch = useDispatch();
   const router = useRouter();
+
+  // DEBUG : voir ce qu'il y a dans le panier
+  console.log("Panier :", cart);
 
   if (!cart || cart.length === 0) {
     return (
@@ -22,10 +34,16 @@ export default function CartPage() {
     );
   }
 
-  // Calcul du jeu offert (le moins cher)
-  const sortedCart = [...cart].sort((a, b) => a.price - b.price);
-  const totalPrice = cart.reduce((acc, game) => acc + game.price, 0);
-  const discount = cart.length >= 5 ? sortedCart[0].price : 0;
+  // Tri du panier par prix (pour trouver le jeu le moins cher)
+  const sortedCart = [...cart].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+
+  // Somme des prix (avec sécurité si price absent)
+  const totalPrice = cart.reduce((acc, game) => acc + (game.price ?? 0), 0);
+
+  // Remise si 5 jeux ou plus : le moins cher offert
+  const discount = cart.length >= 5 ? sortedCart[0].price ?? 0 : 0;
+
+  // Prix final après remise
   const finalPrice = totalPrice - discount;
 
   const handleValidation = () => {
@@ -50,7 +68,7 @@ export default function CartPage() {
             />
             <div className="flex-1">
               <p className="font-semibold">{game.title}</p>
-              <p className="text-[#FF8200] font-bold">{game.price} €</p>
+              <p className="text-[#FF8200] font-bold">{game.price?.toFixed(2)} €</p>
             </div>
             <button
               onClick={() => dispatch(removeFromCart(game.id))}
@@ -64,11 +82,16 @@ export default function CartPage() {
       </ul>
 
       <div className="text-right space-y-2">
-        <p>Sous-total : <span className="font-semibold">{totalPrice} €</span></p>
+        <p>
+          Sous-total : <span className="font-semibold">{totalPrice.toFixed(2)} €</span>
+        </p>
         {discount > 0 && (
-          <p className="text-green-500 font-semibold">Remise 4+1 : -{discount} €</p>
+          <p className="text-green-500 font-semibold">Remise 4+1 : -{discount.toFixed(2)} €</p>
         )}
-        <p className="text-xl font-bold">Total : <span className="text-[#FF8200]">{finalPrice} €</span></p>
+        <p className="text-xl font-bold">
+          Total : <span className="text-[#FF8200]">{finalPrice.toFixed(2)} €</span>
+        </p>
+
         <div className="flex justify-end gap-4 mt-4">
           <button
             onClick={() => dispatch(clearCart())}
