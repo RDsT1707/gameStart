@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../store/slices/cartSlice";
+import { addToCart } from "src/store/slices/cartSlice";
 
 interface Game {
   id: number;
