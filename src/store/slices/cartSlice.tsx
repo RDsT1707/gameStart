@@ -18,7 +18,6 @@ const cartSlice = createSlice({
       if (!exists) {
         state.panier.push(action.payload);
       }
-      // Sinon, on ne fait rien
     },
     removeFromCart(state, action: PayloadAction<number>) {
       state.panier = state.panier.filter(item => item.id !== action.payload);
