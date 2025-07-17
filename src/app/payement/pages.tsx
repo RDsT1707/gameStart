@@ -1,52 +1,69 @@
 "use client";
 
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/store/store";
+import { removeFromCart, clearCart } from "@/store/slices/cartSlice";
 import { useRouter } from "next/navigation";
-import { RootState } from "@/store";
-import { clearCart } from "@/store/slices/cartSlice";
-import { deductCredit } from "@/store/slices/creditSlice";
-import { addGame } from "@/store/slices/userSlice";
+import Link from "next/link";
+import type { Game } from "src/app/types/games"; // id est number ici
 
-const PaymentPage = () => {
+export default function CartPage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const creditBalance = useSelector((state: RootState) => state.credit.balance);
-  const cartItems = useSelector((state: RootState) => state.cart.panier);
-  const totalPrice = cartItems.reduce((acc: number, game: any) => acc + game.price, 0);
 
-  const handlePayWithCredit = () => {
-    if (creditBalance >= totalPrice && cartItems.length > 0) {
-      dispatch(deductCredit(totalPrice));
-      cartItems.forEach((game: any) => {
-        dispatch(addGame(game));
-      });
-      dispatch(clearCart());
-      router.push("/payement/succes");
-    } else if (cartItems.length === 0) {
-      alert("Votre panier est vide.");
-    } else {
-      alert("Solde insuffisant, recharge ton crédit.");
-    }
+  // panier typé Game[], id est number
+  const cart = useSelector((state: RootState) => state.cart.panier) as Game[] | undefined;
+
+  const totalPrice = cart?.reduce((acc, game) => acc + game.price, 0) ?? 0;
+
+  if (!cart || cart.length === 0) {
+    return (
+      <div className="p-8 text-center bg-[#1E1E1E] min-h-screen text-white flex flex-col items-center justify-center">
+        <p className="text-xl mb-4">Ton panier est vide 🛒</p>
+        <Link href="/" className="text-[#FF8200] underline font-semibold">
+          Retour à l’accueil
+        </Link>
+      </div>
+    );
+  }
+
+  // ...
+  // Exemple de suppression dans le panier : id est number
+  const handleRemove = (id: number) => {
+    dispatch(removeFromCart(id));
   };
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E] text-white flex flex-col items-center justify-center p-8">
-      <h1 className="text-3xl font-bold mb-6 text-[#FF8200]">Paiement par crédit</h1>
-      <p className="mb-4">Solde actuel : <span className="font-bold">{creditBalance} €</span></p>
-      <p className="mb-4">Montant à payer : <span className="font-bold">{totalPrice} €</span></p>
-      <button
-        onClick={handlePayWithCredit}
-        className="bg-[#FF8200] text-[#1E1E1E] px-6 py-2 rounded font-semibold hover:bg-orange-600 transition"
-        disabled={cartItems.length === 0}
-      >
-        Payer avec mon crédit
-      </button>
-      {cartItems.length === 0 && (
-        <p className="mt-4 text-red-400">Votre panier est vide.</p>
-      )}
+    <div className="p-8 max-w-4xl mx-auto space-y-6 bg-[#1E1E1E] min-h-screen text-white">
+      <h1 className="text-3xl font-bold mb-4 text-[#FF8200] text-right">Ton panier</h1>
+
+      <ul className="space-y-4">
+        {cart.map((game) => (
+          <li
+            key={game.id}
+            className="flex items-center gap-4 p-4 rounded-lg shadow-md bg-[#292929] hover:shadow-lg transition"
+          >
+            <img
+              src={game.thumbnail || "/placeholder.png"}
+              alt={game.title}
+              className="w-20 h-20 object-cover rounded"
+            />
+            <div className="flex-1">
+              <p className="font-semibold">{game.title}</p>
+              <p className="text-[#FF8200] font-bold">{game.price.toFixed(2)} €</p>
+            </div>
+            <button
+              onClick={() => handleRemove(game.id)}
+              className="text-red-600 font-bold text-xl px-2 hover:text-red-800 transition"
+              aria-label={`Retirer ${game.title} du panier`}
+            >
+              ✕
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* ...reste du composant */}
     </div>
   );
-};
-
-export default PaymentPage;
+}

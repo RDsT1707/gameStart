@@ -1,22 +1,15 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "src/store"; // Typage TS
+import type { RootState } from "@/store/store";
 import { removeFromCart, clearCart } from "@/store/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-// Type précis du jeu dans le panier
-interface Game {
-  id: string;
-  title: string;
-  price: number;
-  thumbnail?: string;
-}
+import type { Game } from "src/app/types/games"; // Ton type Game unique
 
 export default function CartPage() {
-  // Précise que cart est un tableau de Game
-  const cart = useSelector((state: RootState) => state.cart.panier) as Game[] | undefined;
+  // Cast en unknown puis Game[] pour éviter erreurs TS liées aux modules
+  const cart = useSelector((state: RootState) => state.cart.panier) as unknown as Game[];
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -31,18 +24,11 @@ export default function CartPage() {
     );
   }
 
-  // Trie en sécurité (avec fallback 0 si price absent)
   const sortedCart = [...cart].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-
-  // Calcul total sécurisé
   const totalPrice = cart.reduce((acc, game) => acc + (game.price ?? 0), 0);
-
-  // Réduction 4+1 si au moins 5 items
   const discount = cart.length >= 5 ? sortedCart[0].price ?? 0 : 0;
-
   const finalPrice = totalPrice - discount;
 
-  // Bouton validation
   const handleValidation = () => {
     dispatch(clearCart());
     router.push("/payement/succes");
@@ -59,7 +45,7 @@ export default function CartPage() {
             className="flex items-center gap-4 p-4 rounded-lg shadow-md bg-[#292929] hover:shadow-lg transition"
           >
             <img
-              src={game.thumbnail || "/placeholder.png"}
+              src={game.thumbnail ?? "/placeholder.png"}
               alt={game.title}
               className="w-20 h-20 object-cover rounded"
             />
