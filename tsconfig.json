@@ -21,7 +21,7 @@
   "@/context/*": ["src/context/*"],
   "@/utils/*": ["src/utils/*"],
   "@/styles/*": ["src/styles/*"],
-  "@/hooks/*": ["src/hooks/*"]
+  "@/hooks/*": ["src/hooks/*"],
 },
     "plugins": [
       {
