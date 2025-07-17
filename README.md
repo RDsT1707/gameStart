@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GameStart - Boutique de jeux vidéo
 
-## Getting Started
+## Présentation du projet
 
-First, run the development server:
+GameStart est un projet de boutique en ligne de jeux vidéo que j'ai développé dans le cadre de ma formation en développement web full stack.  
+L'objectif était de créer une application moderne, performante et responsive, permettant aux utilisateurs de naviguer parmi une sélection de jeux, de les ajouter à un panier, et de gérer leur compte utilisateur.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+J'ai utilisé Next.js 13 avec son nouveau système de routing (App Router), React 18, et TypeScript pour garantir un code clair et typé.  
+La gestion d'état globale est assurée par Redux Toolkit, notamment pour le panier et un système de crédits simulant un solde utilisateur.  
+Pour l'authentification, j'ai intégré NextAuth.js avec la connexion via Google OAuth.  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le site est déployé sur Vercel, avec une intégration continue via GitHub.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technologies et outils utilisés
 
-## Learn More
+- **Next.js 13 (App Router)** : J'ai choisi Next.js pour bénéficier du rendu côté serveur (SSR) et de la génération statique (SSG) qui améliorent les performances et le référencement naturel (SEO). Le système App Router m'a permis d'organiser le projet avec des dossiers `app` contenant des fichiers `page.tsx`, ce qui facilite la gestion des routes et la modularité.
 
-To learn more about Next.js, take a look at the following resources:
+- **React 18** : Utilisé pour construire une interface utilisateur réactive et dynamique.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **TypeScript** : J'ai typé toutes les données et composants afin de réduire les erreurs à la compilation et faciliter la maintenance du code.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Redux Toolkit** : Pour gérer l'état global, notamment le panier d'achat et le système de crédits virtuels. Cela permet une gestion propre et efficace du flux de données entre les composants.
 
-## Deploy on Vercel
+- **NextAuth.js** : Implémentation d'un système d'authentification sécurisé avec connexion via Google. Cela m'a permis d'offrir une expérience utilisateur simplifiée tout en assurant la sécurité.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Tailwind CSS** : Framework CSS utilitaire que j'ai utilisé pour styliser rapidement le site avec un design moderne, responsive, et cohérent.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Vercel** : Plateforme de déploiement utilisée pour héberger le projet avec un déploiement continu directement depuis GitHub.
+
+---
+
+## Fonctionnalités développées
+
+- **Affichage dynamique des jeux vidéo** : J'ai créé un hook personnalisé `useGames` qui récupère les données des jeux (simulées ou via API), et qui permet d'afficher les listes avec leurs informations (titre, image, prix).
+
+- **Panier d'achat** : L'utilisateur peut ajouter ou retirer des jeux dans son panier. La gestion est centralisée avec Redux Toolkit. Le total du panier est calculé en temps réel.
+
+- **Système de crédits** : J'ai simulé un système de crédits que l'utilisateur peut utiliser pour acheter des jeux. La gestion des crédits et des achats est intégrée dans le store Redux.
+
+- **Authentification Google** : Intégration de NextAuth.js pour permettre aux utilisateurs de se connecter via leur compte Google. Cela comprend la gestion des sessions et la sécurisation des pages privées.
+
+- **Page compte utilisateur** : Affichage des informations personnelles récupérées via la session (nom, email), ainsi qu'une liste fictive de commandes passées.
+
+- **Gestion des variables d’environnement** : Toutes les clés sensibles (client ID, secret Google, secret NextAuth) sont stockées dans un fichier `.env.local` et configurées dans Vercel pour la production, afin de garantir la sécurité.
+
+- **Déploiement sur Vercel** : J’ai mis en place un workflow CI/CD automatique qui déclenche un build et un déploiement à chaque push sur la branche principale. J’ai aussi corrigé les problèmes liés au cache et aux conflits entre les dossiers `pages` et `app`.
+
+---
+
+## Méthodologie et bonnes pratiques
+
+- J’ai structuré le projet en utilisant les standards modernes de Next.js 13 avec le dossier `app` et ses pages en `page.tsx`.  
+- La gestion du type `Game` dans TypeScript m’a permis d’éviter des erreurs fréquentes liées à des valeurs potentiellement `undefined` (exemple : prix du jeu).  
+- J’ai utilisé les hooks React personnalisés pour isoler la logique métier (ex: récupération des jeux) et rendre le code plus lisible.  
+- Pour Redux, j’ai utilisé `createSlice` et `configureStore` de Redux Toolkit, qui simplifient la gestion des reducers et des actions.  
+- L’authentification est gérée avec NextAuth en suivant la recommandation d’ajouter une clé secrète en production (`NEXTAUTH_SECRET`), ce qui est obligatoire pour garantir la sécurité.  
+- Le style est entièrement réalisé avec Tailwind, ce qui facilite la maintenance et l’homogénéité du design.  
+- J’ai effectué plusieurs tests locaux et déploiements successifs sur Vercel, en corrigeant les erreurs liées au build (notamment la suppression des dossiers `pages` en conflit avec `app`, et le nettoyage du cache Vercel).
+
+---
+
+## Installation et lancement du projet
+
+1. Cloner le dépôt GitHub :  
+   ```bash
+   git clone <URL_DU_REPO>
