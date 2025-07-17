@@ -11,7 +11,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (session) {
-      router.push("/account");
+      router.push("/accounts");
     }
   }, [session, router]);
 
