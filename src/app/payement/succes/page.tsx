@@ -3,19 +3,17 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { acheterJeux } from "@/store/slices/creditSlice";
 import { clearCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
 
 export default function SuccessPage() {
   const dispatch = useDispatch();
 
-  const cart = useSelector((state: RootState) => state.cart?.panier ?? []); // 🛠️ protection ici
+  const cart = useSelector((state: RootState) => state.cart?.panier ?? []); 
 
  useEffect(() => {
   if (cart.length > 0) {
-    dispatch(acheterJeux(cart)); // ajoute tous les jeux achetés dans la bibliothèque
-    dispatch(clearCart());       // vide le panier
+    dispatch(clearCart());       
   }
 }, [cart, dispatch]);
 
