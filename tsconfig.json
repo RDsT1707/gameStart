@@ -16,12 +16,13 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["src/components/*"],
-      "@/store/*": ["src/store/*"],
-      "@/context/*": ["src/context/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/styles/*": ["src/styles/*"]
-    },
+  "@/components/*": ["src/components/*"],
+  "@/store/*": ["src/store/*"],
+  "@/context/*": ["src/context/*"],
+  "@/utils/*": ["src/utils/*"],
+  "@/styles/*": ["src/styles/*"],
+  "@/hooks/*": ["src/hooks/*"]
+},
     "plugins": [
       {
         "name": "next"
