@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import creditReducer from './slices/creditSlice';
+import cartReducer from "./slices/cartSlice";
+import creditReducer from "./slices/creditSlice";
 
 export const store = configureStore({
   reducer: {
-    credit: creditReducer,
+     credit: creditReducer, // slice credit
+    cart: cartReducer,
   },
 });
 

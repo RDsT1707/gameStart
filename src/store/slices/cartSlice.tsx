@@ -1,6 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { Game } from "src/app/types/games";
 
-const initialState = {
+interface CartState {
+  panier: Game[];
+}
+
+const initialState: CartState = {
   panier: [],
 };
 
@@ -8,14 +13,14 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart(state, action) {
+    addToCart(state, action: PayloadAction<Game>) {
       const exists = state.panier.find(item => item.id === action.payload.id);
       if (!exists) {
         state.panier.push(action.payload);
       }
-      // Sinon, ne rien faire (tu peux aussi gérer un message d'alerte côté front)
+      // Sinon, on ne fait rien
     },
-    removeFromCart(state, action) {
+    removeFromCart(state, action: PayloadAction<number>) {
       state.panier = state.panier.filter(item => item.id !== action.payload);
     },
     clearCart(state) {

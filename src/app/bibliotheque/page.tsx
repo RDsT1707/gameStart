@@ -1,27 +1,24 @@
 "use client";
+
 import React from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store";
+import type { RootState } from "@/store/store";
+import type { Game } from "src/app/types/games";
 import Link from "next/link";
 
-interface Game {
-  id: number;
-  title: string;
-  thumbnail?: string;
-  price: number;
-}
-
 export default function Bibliotheque() {
-  const purchasedGames = useSelector(
-    (state: RootState) => state.cart.panier as Game[]
-  );
+  // Ajoute un fallback à [] si panier est undefined
+  const purchasedGames = (useSelector(
+    (state: RootState) => state.cart.panier
+  ) ?? []) as Game[];
 
-  if (!purchasedGames || purchasedGames.length === 0)
+  if (purchasedGames.length === 0) {
     return (
       <div className="container mx-auto p-8 bg-[#1E1E1E] min-h-screen text-white flex items-center justify-center">
         <p className="text-center text-white text-xl">Votre bibliothèque est vide.</p>
       </div>
     );
+  }
 
   return (
     <div className="container mx-auto p-8 bg-[#1E1E1E] min-h-screen text-white">
@@ -34,7 +31,7 @@ export default function Bibliotheque() {
             className="block bg-[#292929] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
           >
             <img
-              src={game.thumbnail || "/placeholder.png"}
+              src={game.thumbnail ?? "/placeholder.png"}
               alt={game.title}
               className="w-full aspect-video object-cover"
             />
