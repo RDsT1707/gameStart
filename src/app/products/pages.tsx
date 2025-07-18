@@ -1,9 +1,17 @@
-"use client";
+"use client"; 
+// Nécessaire dans app/ pour activer les hooks côté client
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { addToCart } from "src/store/slices/cartSlice";
+// Pour la navigation interne Next.js
 
+import { useDispatch } from "react-redux";
+// Pour dispatcher des actions Redux
+
+import { addToCart } from "src/store/slices/cartSlice";
+// Action pour ajouter un produit au panier
+
+// Définition du type Game avec les props importantes qu'on utilise ici
 interface Game {
   id: number;
   title: string;
@@ -12,20 +20,25 @@ interface Game {
 }
 
 export default function ProductsPage() {
+  // State local pour stocker la liste des jeux récupérés depuis l'API
   const [games, setGames] = useState<Game[]>([]);
+  // State local pour le texte saisi dans la barre de recherche
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
 
+  // Au chargement du composant, on récupère la liste des jeux via fetch
   useEffect(() => {
     fetch("https://www.freetogame.com/api/games")
       .then((res) => res.json())
       .then((data) => setGames(data));
   }, []);
 
+  // Filtre les jeux selon la recherche (insensible à la casse)
   const filteredGames = games.filter((game) =>
     game.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Fonction pour ajouter un jeu au panier avec un prix fixe (20 ici)
   function handleAdd(game: Game) {
     dispatch(
       addToCart({
@@ -50,14 +63,16 @@ export default function ProductsPage() {
         />
       </div>
 
-      {/* Grille responsive */}
+      {/* Grille responsive affichant les jeux filtrés */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6">
         {filteredGames.map((game) => (
+          // Chaque jeu est un lien vers sa page détail
           <Link href={`/products/${game.id}`} key={game.id} passHref>
             <a
               className="bg-[#444] rounded-lg overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer flex flex-col"
               aria-label={`Détails du jeu ${game.title}`}
             >
+              {/* Image du jeu */}
               <img
                 src={game.thumbnail}
                 alt={game.title}
@@ -65,10 +80,13 @@ export default function ProductsPage() {
                 loading="lazy"
               />
               <div className="p-3 flex flex-col flex-grow">
+                {/* Titre du jeu */}
                 <h3 className="font-bold text-center mb-1 truncate">{game.title}</h3>
+                {/* Plateforme */}
                 <p className="text-sm text-center text-gray-300 truncate">
                   {game.platform}
                 </p>
+                {/* Badges prix fictifs */}
                 <div className="flex justify-center gap-2 mt-2">
                   <span className="bg-[#FF8200] px-2 py-0.5 rounded text-xs whitespace-nowrap">
                     PRIX PLEIN
@@ -77,10 +95,11 @@ export default function ProductsPage() {
                     PRIX RÉDUIT
                   </span>
                 </div>
+                {/* Bouton ajouter au panier */}
                 <button
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    e.preventDefault(); // Empêche la navigation au clic
+                    e.stopPropagation(); // Empêche la propagation du clic au lien
                     handleAdd(game);
                   }}
                   className="mt-auto w-full bg-[#FF8200] hover:bg-orange-600 text-[#1E1E1E] py-2 rounded font-semibold transition"
@@ -94,7 +113,7 @@ export default function ProductsPage() {
         ))}
       </div>
 
-      {/* Bouton panier flottant, repositionné pour mobiles */}
+      {/* Bouton flottant pour accéder au panier, bien visible sur mobile et desktop */}
       <Link href="/cart" passHref>
         <button
           aria-label="Voir le panier"
