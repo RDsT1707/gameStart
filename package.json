@@ -12,6 +12,7 @@
     "autoprefixer": "^10.4.14",
     "axios": "^1.10.0",
     "debug": "^4.4.1",
+    "fs": "^0.0.1-security",
     "jspdf": "^2.5.1",
     "next": "13.x",
     "next-auth": "^4.24.11",
@@ -26,5 +27,18 @@
     "@types/node": "24.0.13",
     "@types/react-redux": "^7.1.34",
     "typescript": "^5.0.4"
-  }
+  },
+  "description": "## Présentation du projet",
+  "main": "next.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RDsT1707/gameStart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RDsT1707/gameStart/issues"
+  },
+  "homepage": "https://github.com/RDsT1707/gameStart#readme"
 }

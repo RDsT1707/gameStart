@@ -7,11 +7,12 @@ import type { Game } from "src/app/types/games";
 import Link from "next/link";
 
 export default function Bibliotheque() {
-  // Ajoute un fallback à [] si panier est undefined
+  // Récupère les jeux achetés dans le store Redux (fallback sur tableau vide si undefined)
   const purchasedGames = (useSelector(
     (state: RootState) => state.cart.panier
   ) ?? []) as Game[];
 
+  // Si aucun jeu n'a été acheté, affiche un message vide
   if (purchasedGames.length === 0) {
     return (
       <div className="container mx-auto p-8 bg-[#1E1E1E] min-h-screen text-white flex items-center justify-center">
@@ -22,16 +23,19 @@ export default function Bibliotheque() {
 
   return (
     <div className="container mx-auto p-8 bg-[#1E1E1E] min-h-screen text-white">
-      <h1 className="text-4xl font-bold mb-8 text-[#FF8200] text-right">Ma Bibliothèque</h1>
+      <h1 className="text-4xl font-bold mb-8 text-[#FF8200] text-right">
+        Ma Bibliothèque
+      </h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {purchasedGames.map((game) => (
           <Link
             key={game.id}
             href={`/products/${game.id}`}
-            className="block bg-[#292929] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
+            className="block bg-[#292929] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300 ease-in-out"
           >
             <img
-              src={game.thumbnail ?? "/placeholder.png"}
+              src={game.thumbnail || "/placeholder.png"}
               alt={game.title}
               className="w-full aspect-video object-cover"
             />
